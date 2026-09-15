@@ -1,0 +1,5467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Sri Lanka School Timetable Generator</title>
+
+<style>
+
+/* =========================================================
+   GLOBAL
+========================================================= */
+
+*{
+    box-sizing:border-box;
+}
+
+:root{
+    --primary:#0f3d68;
+    --primary2:#1a73e8;
+    --success:#16a34a;
+    --danger:#dc2626;
+    --warning:#f59e0b;
+    --light:#f8fafc;
+    --border:#cbd5e1;
+    --text:#172033;
+    --muted:#64748b;
+}
+
+body{
+    margin:0;
+    font-family:Arial,Helvetica,sans-serif;
+    background:#eef2f7;
+    color:var(--text);
+}
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+header{
+    background:linear-gradient(
+        135deg,
+        #0f3d68,
+        #155b91
+    );
+    color:white;
+    padding:25px 20px;
+    text-align:center;
+    box-shadow:0 4px 15px rgba(0,0,0,.15);
+}
+
+header h1{
+    margin:0;
+    font-size:28px;
+}
+
+header p{
+    margin:8px 0 0;
+    opacity:.85;
+}
+
+/* =========================================================
+   LAYOUT
+========================================================= */
+
+.container{
+    width:95%;
+    max-width:1550px;
+    margin:25px auto;
+}
+
+.card{
+    background:white;
+    border-radius:12px;
+    padding:20px;
+    margin-bottom:20px;
+    box-shadow:0 3px 12px rgba(15,61,104,.08);
+}
+
+.card h2{
+    color:var(--primary);
+    margin-top:0;
+    padding-bottom:10px;
+    border-bottom:2px solid #e2e8f0;
+}
+
+/* =========================================================
+   GRID
+========================================================= */
+
+.grid{
+    display:grid;
+    grid-template-columns:
+        repeat(auto-fit,minmax(240px,1fr));
+    gap:15px;
+}
+
+.field{
+    display:flex;
+    flex-direction:column;
+    gap:7px;
+}
+
+.field label{
+    font-size:14px;
+    font-weight:bold;
+}
+
+input,
+select{
+    width:100%;
+    padding:10px;
+    border:1px solid var(--border);
+    border-radius:7px;
+    font-size:14px;
+    background:white;
+}
+
+input:focus,
+select:focus{
+    outline:none;
+    border-color:var(--primary2);
+    box-shadow:
+        0 0 0 2px
+        rgba(26,115,232,.12);
+}
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+button{
+    border:0;
+    border-radius:7px;
+    padding:10px 15px;
+    cursor:pointer;
+    font-weight:bold;
+    transition:.2s;
+}
+
+button:hover{
+    transform:translateY(-1px);
+}
+
+.btn-primary{
+    background:var(--primary2);
+    color:white;
+}
+
+.btn-success{
+    background:var(--success);
+    color:white;
+}
+
+.btn-danger{
+    background:var(--danger);
+    color:white;
+}
+
+.btn-warning{
+    background:var(--warning);
+    color:white;
+}
+
+.btn-dark{
+    background:var(--primary);
+    color:white;
+}
+
+.btn-light{
+    background:#e2e8f0;
+    color:var(--text);
+}
+
+.button-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-top:15px;
+}
+
+/* =========================================================
+   SMALL TEXT
+========================================================= */
+
+.small{
+    font-size:12px;
+    color:var(--muted);
+}
+
+/* =========================================================
+   INFO
+========================================================= */
+
+.info-box{
+    background:#eff6ff;
+    border-left:4px solid var(--primary2);
+    padding:12px;
+    border-radius:6px;
+    margin-bottom:15px;
+}
+
+.alert{
+    padding:12px;
+    border-radius:8px;
+    margin-top:12px;
+}
+
+.alert-success{
+    background:#dcfce7;
+    color:#166534;
+}
+
+.alert-warning{
+    background:#fef3c7;
+    color:#92400e;
+}
+
+.alert-danger{
+    background:#fee2e2;
+    color:#991b1b;
+}
+
+/* =========================================================
+   CHECKBOX GROUPS
+========================================================= */
+
+.checkbox-grid{
+    display:grid;
+    grid-template-columns:
+        repeat(auto-fit,minmax(150px,1fr));
+    gap:8px;
+    padding:12px;
+    background:#f8fafc;
+    border:1px solid var(--border);
+    border-radius:8px;
+}
+
+.check-item{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:9px;
+    border-radius:7px;
+    cursor:pointer;
+    font-weight:normal !important;
+    background:white;
+    border:1px solid #e2e8f0;
+}
+
+.check-item:hover{
+    background:#eff6ff;
+    border-color:#93c5fd;
+}
+
+.check-item input{
+    width:17px;
+    height:17px;
+    cursor:pointer;
+}
+
+/* =========================================================
+   TABLE
+========================================================= */
+
+.table-wrapper{
+    overflow-x:auto;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:15px;
+}
+
+th,
+td{
+    border:1px solid var(--border);
+    padding:8px;
+    text-align:center;
+    font-size:13px;
+}
+
+th{
+    background:var(--primary);
+    color:white;
+}
+
+tr:nth-child(even){
+    background:#f8fafc;
+}
+
+/* =========================================================
+   BADGES
+========================================================= */
+
+.badge{
+    display:inline-block;
+    padding:4px 8px;
+    margin:2px;
+    border-radius:20px;
+    background:#dbeafe;
+    color:#1d4ed8;
+    font-size:11px;
+}
+
+.badge-green{
+    background:#dcfce7;
+    color:#166534;
+}
+
+.badge-red{
+    background:#fee2e2;
+    color:#991b1b;
+}
+
+.badge-yellow{
+    background:#fef3c7;
+    color:#92400e;
+}
+
+/* =========================================================
+   STATS
+========================================================= */
+
+.stats{
+    display:grid;
+    grid-template-columns:
+        repeat(auto-fit,minmax(170px,1fr));
+    gap:12px;
+    margin-bottom:20px;
+}
+
+.stat{
+    background:white;
+    border-radius:10px;
+    padding:18px;
+    box-shadow:0 3px 10px rgba(0,0,0,.06);
+}
+
+.stat-number{
+    font-size:28px;
+    font-weight:bold;
+    color:var(--primary);
+}
+
+.stat-label{
+    font-size:13px;
+    color:var(--muted);
+}
+
+/* =========================================================
+   SUBJECT TAGS
+========================================================= */
+
+.subject-tags{
+    display:flex;
+    flex-wrap:wrap;
+    gap:5px;
+}
+
+/* =========================================================
+   TIMETABLE
+========================================================= */
+
+.timetable{
+    min-width:1050px;
+}
+
+.timetable th{
+    position:sticky;
+    top:0;
+    z-index:2;
+}
+
+.timetable td{
+    min-width:110px;
+    height:70px;
+}
+
+.lesson{
+    background:#eff6ff;
+    border:1px solid #bfdbfe;
+    border-radius:7px;
+    padding:6px;
+    min-height:50px;
+}
+
+.lesson-subject{
+    font-weight:bold;
+    color:var(--primary);
+}
+
+.lesson-teacher{
+    font-size:11px;
+    color:#475569;
+    margin-top:3px;
+}
+
+.free{
+    color:#94a3b8;
+    font-size:12px;
+}
+
+.shortage{
+    color:var(--danger);
+    font-weight:bold;
+}
+
+.success{
+    color:var(--success);
+    font-weight:bold;
+}
+
+/* =========================================================
+   SECTION
+========================================================= */
+
+.section-title{
+    margin-top:30px;
+    color:var(--primary);
+}
+
+/* =========================================================
+   HIDDEN
+========================================================= */
+
+.hidden{
+    display:none !important;
+}
+
+/* =========================================================
+   PRINT
+========================================================= */
+
+@media print{
+
+    body{
+        background:white;
+    }
+
+    header{
+        background:white;
+        color:black;
+        box-shadow:none;
+    }
+
+    .no-print{
+        display:none !important;
+    }
+
+    .card{
+        box-shadow:none;
+        border:0;
+    }
+
+    .print-area{
+        display:block !important;
+    }
+
+    .timetable{
+        min-width:0;
+    }
+
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media(max-width:700px){
+
+    header h1{
+        font-size:21px;
+    }
+
+    .container{
+        width:98%;
+    }
+
+    .checkbox-grid{
+        grid-template-columns:1fr;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- =======================================================
+     HEADER
+======================================================= -->
+
+<header>
+
+    <h1>
+        🇱🇰 Sri Lanka School Timetable Generator
+    </h1>
+
+    <p>
+        Smart Class • Teacher • Subject Timetable System
+    </p>
+
+</header>
+
+
+<div class="container">
+
+
+<!-- =======================================================
+     QUICK ACTIONS
+======================================================= -->
+
+<div class="card no-print">
+
+    <h2>⚡ Quick Actions</h2>
+
+    <div class="button-row">
+
+        <button
+            class="btn-primary"
+            onclick="createDemoSchool()"
+        >
+            Create Demo School
+        </button>
+
+        <button
+            class="btn-success"
+            onclick="generateTimetable()"
+        >
+            Generate Timetable
+        </button>
+
+        <button
+            class="btn-dark"
+            onclick="checkSetup()"
+        >
+            Check Setup
+        </button>
+
+        <button
+            class="btn-warning"
+            onclick="saveData()"
+        >
+            Save
+        </button>
+
+        <button
+            class="btn-light"
+            onclick="loadData()"
+        >
+            Load
+        </button>
+
+        <button
+            class="btn-dark"
+            onclick="window.print()"
+        >
+            Print
+        </button>
+
+        <button
+            class="btn-danger"
+            onclick="clearAllData()"
+        >
+            Clear All
+        </button>
+
+    </div>
+
+    <div id="setupMessage"></div>
+
+</div>
+
+
+<!-- =======================================================
+     SCHOOL
+======================================================= -->
+
+<div class="card no-print">
+
+    <h2>🏫 School Information</h2>
+
+    <div class="grid">
+
+        <div class="field">
+
+            <label>
+                School Name
+            </label>
+
+            <input
+                id="schoolName"
+                placeholder="Enter school name"
+            >
+
+        </div>
+
+        <div class="field">
+
+            <label>
+                School Address
+            </label>
+
+            <input
+                id="schoolAddress"
+                placeholder="Enter school address"
+            >
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =======================================================
+     SUBJECT MASTER
+======================================================= -->
+
+<div class="card no-print">
+
+    <h2>📚 Subject Management</h2>
+
+    <div class="grid">
+
+        <div class="field">
+
+            <label>
+                Add New Subject
+            </label>
+
+            <input
+                id="newSubject"
+                placeholder="Example: Sinhala"
+            >
+
+        </div>
+
+    </div>
+
+    <div class="button-row">
+
+        <button
+            class="btn-primary"
+            onclick="addSubject()"
+        >
+            Add Subject
+        </button>
+
+    </div>
+
+    <div
+        id="subjectList"
+        style="margin-top:15px;"
+    ></div>
+
+</div>
+
+
+<!-- =======================================================
+     TEACHER MANAGEMENT
+======================================================= -->
+
+<div class="card no-print">
+
+    <h2>👨‍🏫 Teacher Management</h2>
+
+    <div class="info-box">
+
+        <b>Teacher system:</b>
+
+        One teacher can teach multiple subjects and multiple
+        classes. Use the checkboxes below to select all subjects
+        and classes that the teacher is allowed to teach.
+
+        The subject configuration system will automatically
+        detect suitable teachers.
+
+    </div>
+
+
+    <div class="grid">
+
+        <!-- NAME -->
+
+        <div class="field">
+
+            <label>
+                Teacher Name
+            </label>
+
+            <input
+                id="teacherName"
+                placeholder="Example: Mr. Mohamed"
+            >
+
+        </div>
+
+
+        <!-- SUBJECTS -->
+
+        <div class="field">
+
+            <label>
+                Subjects Teacher Can Teach
+            </label>
+
+            <div
+                id="teacherSubjectCheckboxes"
+                class="checkbox-grid"
+            ></div>
+
+            <span class="small">
+                Select multiple subjects.
+            </span>
+
+        </div>
+
+
+        <!-- CLASSES -->
+
+        <div class="field">
+
+            <label>
+                Classes Teacher Can Teach
+            </label>
+
+            <input
+                id="teacherClasses"
+                placeholder="Example: 6A,7A,8A"
+            >
+
+            <span class="small">
+                Leave empty if the teacher can teach all classes.
+            </span>
+
+        </div>
+
+
+        <!-- LEAVE DAYS -->
+
+        <div class="field">
+
+            <label>
+                Teacher Leave Days
+            </label>
+
+            <div class="checkbox-grid">
+
+                <label class="check-item">
+
+                    <input
+                        type="checkbox"
+                        name="teacherLeaveDay"
+                        value="Monday"
+                    >
+
+                    Monday
+
+                </label>
+
+
+                <label class="check-item">
+
+                    <input
+                        type="checkbox"
+                        name="teacherLeaveDay"
+                        value="Tuesday"
+                    >
+
+                    Tuesday
+
+                </label>
+
+
+                <label class="check-item">
+
+                    <input
+                        type="checkbox"
+                        name="teacherLeaveDay"
+                        value="Wednesday"
+                    >
+
+                    Wednesday
+
+                </label>
+
+
+                <label class="check-item">
+
+                    <input
+                        type="checkbox"
+                        name="teacherLeaveDay"
+                        value="Thursday"
+                    >
+
+                    Thursday
+
+                </label>
+
+
+                <label class="check-item">
+
+                    <input
+                        type="checkbox"
+                        name="teacherLeaveDay"
+                        value="Friday"
+                    >
+
+                    Friday
+
+                </label>
+
+            </div>
+
+        </div>
+
+
+        <!-- UNAVAILABLE PERIODS -->
+
+        <div class="field">
+
+            <label>
+                Unavailable Periods
+            </label>
+
+            <input
+                id="teacherLeavePeriods"
+                placeholder="Example: 1,2,9"
+            >
+
+            <span class="small">
+                These periods are unavailable on all working days.
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <div class="button-row">
+
+        <button
+            class="btn-primary"
+            onclick="addTeacher()"
+        >
+            Add Teacher
+        </button>
+
+    </div>
+
+
+    <div class="table-wrapper">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>#</th>
+                    <th>Teacher</th>
+                    <th>Subjects</th>
+                    <th>Classes</th>
+                    <th>Leave Days</th>
+                    <th>Unavailable Periods</th>
+                    <th>Action</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody id="teacherTable"></tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+<!-- =======================================================
+     CLASS MANAGEMENT
+======================================================= -->
+
+<div class="card no-print">
+
+    <h2>🏫 Class Management</h2>
+
+    <div class="grid">
+
+        <div class="field">
+
+            <label>
+                Grade
+            </label>
+
+            <select id="classGrade">
+
+                <option value="6">
+                    Grade 6
+                </option>
+
+                <option value="7">
+                    Grade 7
+                </option>
+
+                <option value="8">
+                    Grade 8
+                </option>
+
+                <option value="9">
+                    Grade 9
+                </option>
+
+                <option value="10">
+                    Grade 10
+                </option>
+
+                <option value="11">
+                    Grade 11
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div class="field">
+
+            <label>
+                Class Name
+            </label>
+
+            <input
+                id="className"
+                placeholder="Example: A"
+            >
+
+        </div>
+
+
+        <div class="field">
+
+            <label>
+                Class Teacher
+            </label>
+
+            <select id="classTeacher">
+
+                <option value="">
+                    Select Teacher
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div class="field">
+
+            <label>
+                Class Teacher Subject
+            </label>
+
+            <select id="classTeacherSubject">
+
+                <option value="">
+                    Select Subject
+                </option>
+
+            </select>
+
+        </div>
+
+    </div>
+
+
+    <div class="button-row">
+
+        <button
+            class="btn-primary"
+            onclick="addClass()"
+        >
+            Add Class
+        </button>
+
+    </div>
+
+
+    <div class="table-wrapper">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>#</th>
+                    <th>Class</th>
+                    <th>Class Teacher</th>
+                    <th>Teacher Subject</th>
+                    <th>Action</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody id="classTable"></tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+<!-- =======================================================
+     SUBJECT CONFIGURATION
+======================================================= -->
+
+<div class="card no-print">
+
+    <h2>
+        🧩 Class Subject Configuration
+    </h2>
+
+    <div class="info-box">
+
+        <b>Automatic teacher detection:</b>
+
+        First select a class and subject.
+
+        The system will only display teachers who are registered
+        to teach that subject and that class.
+
+        After selecting the teacher, that teacher becomes the
+        assigned teacher for that subject in that class.
+
+    </div>
+
+
+    <div class="grid">
+
+        <div class="field">
+
+            <label>
+                Class
+            </label>
+
+            <select
+                id="configClass"
+                onchange="updateTeacherOptions()"
+            >
+
+                <option value="">
+                    Select Class
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div class="field">
+
+            <label>
+                Subject
+            </label>
+
+            <select
+                id="configSubject"
+                onchange="updateTeacherOptions()"
+            >
+
+                <option value="">
+                    Select Subject
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div class="field">
+
+            <label>
+                Teacher
+            </label>
+
+            <select id="configTeacher">
+
+                <option value="">
+                    Select Teacher
+                </option>
+
+            </select>
+
+            <span class="small">
+                Suitable teachers appear automatically.
+            </span>
+
+        </div>
+
+
+        <div class="field">
+
+            <label>
+                Periods Per Week
+            </label>
+
+            <input
+                id="configPeriods"
+                type="number"
+                min="1"
+                max="20"
+                value="5"
+            >
+
+        </div>
+
+
+        <div class="field">
+
+            <label>
+                Maximum Periods Per Day
+            </label>
+
+            <input
+                id="configMaxDay"
+                type="number"
+                min="1"
+                max="4"
+                value="1"
+            >
+
+        </div>
+
+    </div>
+
+
+    <div class="button-row">
+
+        <button
+            class="btn-primary"
+            onclick="addSubjectConfig()"
+        >
+            Add Subject Configuration
+        </button>
+
+    </div>
+
+
+    <div class="table-wrapper">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>#</th>
+                    <th>Class</th>
+                    <th>Subject</th>
+                    <th>Teacher</th>
+                    <th>Periods/Week</th>
+                    <th>Max/Day</th>
+                    <th>Action</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody id="configTable"></tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+<!-- =======================================================
+     RESULTS
+======================================================= -->
+
+<div id="results"></div>
+
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   GLOBAL SETTINGS
+========================================================= */
+
+const DAYS = [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday"
+];
+
+const PERIODS_PER_DAY = {
+
+    Monday:9,
+
+    Tuesday:9,
+
+    Wednesday:9,
+
+    Thursday:9,
+
+    Friday:6
+
+};
+
+
+/* =========================================================
+   GLOBAL DATA
+========================================================= */
+
+let subjects = [
+
+    "Tamil",
+    "English",
+    "Mathematics",
+    "Science",
+    "Islam",
+    "History",
+    "Geography",
+    "Civic Education",
+    "ICT",
+    "Health & Physical Education",
+    "Practical & Technical Skills",
+    "Aesthetic Education"
+
+];
+
+
+let teachers = [];
+
+let classes = [];
+
+let subjectConfigs = [];
+
+let timetable = {};
+
+let generated = false;
+
+
+/* =========================================================
+   HELPERS
+========================================================= */
+
+function id(){
+
+    return Math.random()
+        .toString(36)
+        .substring(2,10);
+
+}
+
+
+function escapeHtml(value){
+
+    return String(value ?? "")
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+
+}
+
+
+function parsePeriods(value){
+
+    return String(value || "")
+        .split(",")
+        .map(x => parseInt(x.trim()))
+        .filter(
+            x =>
+                Number.isInteger(x)
+                &&
+                x > 0
+        );
+
+}
+
+
+function getClassId(
+    grade,
+    name
+){
+
+    return `${grade}${name}`;
+
+}
+
+
+function getClassById(classId){
+
+    return classes.find(
+        c => c.id === classId
+    );
+
+}
+
+
+function getTeacherById(teacherId){
+
+    return teachers.find(
+        t => t.id === teacherId
+    );
+
+}
+
+
+function getTeacherName(teacherId){
+
+    const teacher =
+        getTeacherById(teacherId);
+
+    return teacher
+        ? teacher.name
+        : "Unassigned";
+
+}
+
+
+/* =========================================================
+   SUBJECT MANAGEMENT
+========================================================= */
+
+function addSubject(){
+
+    const input =
+        document.getElementById(
+            "newSubject"
+        );
+
+    const name =
+        input.value.trim();
+
+
+    if(!name){
+
+        alert(
+            "Enter a subject name."
+        );
+
+        return;
+
+    }
+
+
+    if(subjects.includes(name)){
+
+        alert(
+            "This subject already exists."
+        );
+
+        return;
+
+    }
+
+
+    subjects.push(name);
+
+    input.value = "";
+
+    refresh();
+
+}
+
+
+function removeSubject(index){
+
+    const subject =
+        subjects[index];
+
+
+    const usedByTeacher =
+        teachers.some(
+            teacher =>
+                teacher.subjects
+                    .includes(subject)
+        );
+
+
+    const usedByConfig =
+        subjectConfigs.some(
+            config =>
+                config.subject === subject
+        );
+
+
+    if(
+        usedByTeacher ||
+        usedByConfig
+    ){
+
+        alert(
+            "This subject is currently being used. Remove its assignments first."
+        );
+
+        return;
+
+    }
+
+
+    subjects.splice(
+        index,
+        1
+    );
+
+
+    refresh();
+
+}
+
+
+/* =========================================================
+   TEACHER SUBJECT CHECKBOXES
+========================================================= */
+
+function renderTeacherSubjectCheckboxes(){
+
+    const container =
+        document.getElementById(
+            "teacherSubjectCheckboxes"
+        );
+
+
+    container.innerHTML = "";
+
+
+    subjects.forEach(
+        subject => {
+
+            const label =
+                document.createElement(
+                    "label"
+                );
+
+
+            label.className =
+                "check-item";
+
+
+            label.innerHTML = `
+
+                <input
+                    type="checkbox"
+                    name="teacherSubject"
+                    value="${escapeHtml(subject)}"
+                >
+
+                ${escapeHtml(subject)}
+
+            `;
+
+
+            container.appendChild(
+                label
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   ADD TEACHER
+========================================================= */
+
+function addTeacher(){
+
+    const name =
+        document
+        .getElementById(
+            "teacherName"
+        )
+        .value
+        .trim();
+
+
+    const selectedSubjects =
+        [
+            ...document.querySelectorAll(
+                'input[name="teacherSubject"]:checked'
+            )
+        ]
+        .map(
+            x => x.value
+        );
+
+
+    const classesText =
+        document
+        .getElementById(
+            "teacherClasses"
+        )
+        .value
+        .trim();
+
+
+    const leaveDays =
+        [
+            ...document.querySelectorAll(
+                'input[name="teacherLeaveDay"]:checked'
+            )
+        ]
+        .map(
+            x => x.value
+        );
+
+
+    const leavePeriods =
+        parsePeriods(
+            document
+            .getElementById(
+                "teacherLeavePeriods"
+            )
+            .value
+        );
+
+
+    if(!name){
+
+        alert(
+            "Enter teacher name."
+        );
+
+        return;
+
+    }
+
+
+    if(selectedSubjects.length === 0){
+
+        alert(
+            "Select at least one subject."
+        );
+
+        return;
+
+    }
+
+
+    const teacherClasses =
+        classesText
+        ?
+        classesText
+            .split(",")
+            .map(
+                x => x.trim()
+            )
+            .filter(Boolean)
+        :
+        [];
+
+
+    teachers.push({
+
+        id:id(),
+
+        name:name,
+
+        subjects:selectedSubjects,
+
+        classes:teacherClasses,
+
+        leaveDays:leaveDays,
+
+        leavePeriods:leavePeriods
+
+    });
+
+
+    clearTeacherForm();
+
+    refresh();
+
+}
+
+
+/* =========================================================
+   CLEAR TEACHER FORM
+========================================================= */
+
+function clearTeacherForm(){
+
+    document
+        .getElementById(
+            "teacherName"
+        )
+        .value = "";
+
+
+    document
+        .getElementById(
+            "teacherClasses"
+        )
+        .value = "";
+
+
+    document
+        .getElementById(
+            "teacherLeavePeriods"
+        )
+        .value = "";
+
+
+    document
+        .querySelectorAll(
+            'input[name="teacherSubject"]'
+        )
+        .forEach(
+            checkbox =>
+                checkbox.checked = false
+        );
+
+
+    document
+        .querySelectorAll(
+            'input[name="teacherLeaveDay"]'
+        )
+        .forEach(
+            checkbox =>
+                checkbox.checked = false
+        );
+
+}
+
+
+/* =========================================================
+   DELETE TEACHER
+========================================================= */
+
+function removeTeacher(index){
+
+    const teacher =
+        teachers[index];
+
+
+    const used =
+        subjectConfigs.some(
+            config =>
+                config.teacherId ===
+                teacher.id
+        )
+        ||
+        classes.some(
+            cls =>
+                cls.teacherId ===
+                teacher.id
+        );
+
+
+    if(used){
+
+        alert(
+            "This teacher is currently assigned. Remove the related assignments first."
+        );
+
+        return;
+
+    }
+
+
+    teachers.splice(
+        index,
+        1
+    );
+
+
+    refresh();
+
+}
+
+
+/* =========================================================
+   TEACHER CAN TEACH CLASS
+========================================================= */
+
+function teacherCanTeachClass(
+    teacher,
+    classId
+){
+
+    /*
+        Empty class list means
+        teacher can teach every class.
+    */
+
+    if(
+        !teacher.classes ||
+        teacher.classes.length === 0
+    ){
+
+        return true;
+
+    }
+
+
+    return teacher.classes
+        .includes(classId);
+
+}
+
+
+/* =========================================================
+   TEACHER CAN TEACH SUBJECT
+========================================================= */
+
+function teacherCanTeachSubject(
+    teacher,
+    subject
+){
+
+    return (
+        teacher &&
+        teacher.subjects &&
+        teacher.subjects.includes(
+            subject
+        )
+    );
+
+}
+
+
+/* =========================================================
+   FIND SUITABLE TEACHERS
+========================================================= */
+
+function findSuitableTeachers(
+    classId,
+    subject
+){
+
+    return teachers.filter(
+        teacher =>
+
+            teacherCanTeachSubject(
+                teacher,
+                subject
+            )
+
+            &&
+
+            teacherCanTeachClass(
+                teacher,
+                classId
+            )
+
+    );
+
+}
+
+
+/* =========================================================
+   CLASS MANAGEMENT
+========================================================= */
+
+function addClass(){
+
+    const grade =
+        document
+        .getElementById(
+            "classGrade"
+        )
+        .value;
+
+
+    const name =
+        document
+        .getElementById(
+            "className"
+        )
+        .value
+        .trim();
+
+
+    const teacherId =
+        document
+        .getElementById(
+            "classTeacher"
+        )
+        .value;
+
+
+    const teacherSubject =
+        document
+        .getElementById(
+            "classTeacherSubject"
+        )
+        .value;
+
+
+    if(!name){
+
+        alert(
+            "Enter class name."
+        );
+
+        return;
+
+    }
+
+
+    const classId =
+        getClassId(
+            grade,
+            name
+        );
+
+
+    if(
+        classes.some(
+            cls =>
+                cls.id === classId
+        )
+    ){
+
+        alert(
+            "This class already exists."
+        );
+
+        return;
+
+    }
+
+
+    if(teacherId){
+
+        const teacher =
+            getTeacherById(
+                teacherId
+            );
+
+
+        if(
+            !teacherCanTeachClass(
+                teacher,
+                classId
+            )
+        ){
+
+            alert(
+                "Selected teacher is not assigned to this class."
+            );
+
+            return;
+
+        }
+
+
+        if(
+            teacherSubject &&
+            !teacherCanTeachSubject(
+                teacher,
+                teacherSubject
+            )
+        ){
+
+            alert(
+                "The class teacher is not registered to teach the selected subject."
+            );
+
+            return;
+
+        }
+
+    }
+
+
+    classes.push({
+
+        id:classId,
+
+        grade:String(grade),
+
+        name:name,
+
+        teacherId:teacherId,
+
+        teacherSubject:teacherSubject
+
+    });
+
+
+    document
+        .getElementById(
+            "className"
+        )
+        .value = "";
+
+
+    refresh();
+
+}
+
+
+/* =========================================================
+   DELETE CLASS
+========================================================= */
+
+function removeClass(index){
+
+    const cls =
+        classes[index];
+
+
+    const used =
+        subjectConfigs.some(
+            config =>
+                config.classId ===
+                cls.id
+        );
+
+
+    if(used){
+
+        alert(
+            "This class has subject configurations. Delete those configurations first."
+        );
+
+        return;
+
+    }
+
+
+    classes.splice(
+        index,
+        1
+    );
+
+
+    refresh();
+
+}
+
+
+/* =========================================================
+   CLASS TEACHER SELECT
+========================================================= */
+
+function renderClassTeacherSelect(){
+
+    const select =
+        document.getElementById(
+            "classTeacher"
+        );
+
+
+    const grade =
+        document.getElementById(
+            "classGrade"
+        ).value;
+
+
+    const name =
+        document.getElementById(
+            "className"
+        ).value
+        .trim();
+
+
+    const classId =
+        name
+        ?
+        getClassId(
+            grade,
+            name
+        )
+        :
+        "";
+
+
+    select.innerHTML = `
+
+        <option value="">
+            Select Teacher
+        </option>
+
+    `;
+
+
+    teachers.forEach(
+        teacher => {
+
+            const suitable =
+                !classId
+                ||
+                teacher.classes.length === 0
+                ||
+                teacher.classes.includes(
+                    classId
+                );
+
+
+            if(!suitable){
+
+                return;
+
+            }
+
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+
+            option.value =
+                teacher.id;
+
+
+            option.textContent =
+                teacher.name;
+
+
+            select.appendChild(
+                option
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   CLASS TEACHER SUBJECT SELECT
+========================================================= */
+
+function renderClassTeacherSubjects(){
+
+    const select =
+        document.getElementById(
+            "classTeacherSubject"
+        );
+
+
+    select.innerHTML = `
+
+        <option value="">
+            Select Subject
+        </option>
+
+    `;
+
+
+    subjects.forEach(
+        subject => {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+
+            option.value =
+                subject;
+
+
+            option.textContent =
+                subject;
+
+
+            select.appendChild(
+                option
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   RENDER CLASSES
+========================================================= */
+
+function renderClasses(){
+
+    const tbody =
+        document.getElementById(
+            "classTable"
+        );
+
+
+    tbody.innerHTML = "";
+
+
+    classes.forEach(
+        (cls,index) => {
+
+            const teacher =
+                getTeacherById(
+                    cls.teacherId
+                );
+
+
+            const row =
+                document.createElement(
+                    "tr"
+                );
+
+
+            row.innerHTML = `
+
+                <td>
+                    ${index + 1}
+                </td>
+
+                <td>
+                    <b>
+                        Grade ${escapeHtml(cls.grade)}
+                        -
+                        ${escapeHtml(cls.name)}
+                    </b>
+                </td>
+
+                <td>
+                    ${
+                        teacher
+                        ?
+                        escapeHtml(
+                            teacher.name
+                        )
+                        :
+                        "Not assigned"
+                    }
+                </td>
+
+                <td>
+                    ${
+                        cls.teacherSubject
+                        ?
+                        escapeHtml(
+                            cls.teacherSubject
+                        )
+                        :
+                        "-"
+                    }
+                </td>
+
+                <td>
+
+                    <button
+                        class="btn-danger"
+                        onclick="removeClass(${index})"
+                    >
+                        Delete
+                    </button>
+
+                </td>
+
+            `;
+
+
+            tbody.appendChild(
+                row
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   RENDER TEACHERS
+========================================================= */
+
+function renderTeachers(){
+
+    const tbody =
+        document.getElementById(
+            "teacherTable"
+        );
+
+
+    tbody.innerHTML = "";
+
+
+    teachers.forEach(
+        (teacher,index) => {
+
+            const row =
+                document.createElement(
+                    "tr"
+                );
+
+
+            const subjectsHtml =
+                teacher.subjects
+                .map(
+                    subject =>
+                    `
+                    <span class="badge">
+                        ${escapeHtml(subject)}
+                    </span>
+                    `
+                )
+                .join("");
+
+
+            const classesHtml =
+                teacher.classes.length
+                ?
+                teacher.classes
+                    .map(
+                        cls =>
+                        `
+                        <span class="badge badge-green">
+                            ${escapeHtml(cls)}
+                        </span>
+                        `
+                    )
+                    .join("")
+                :
+                `
+                <span class="badge badge-yellow">
+                    All Classes
+                </span>
+                `;
+
+
+            const leaveHtml =
+                teacher.leaveDays.length
+                ?
+                teacher.leaveDays
+                    .map(
+                        day =>
+                        `
+                        <span class="badge badge-red">
+                            ${escapeHtml(day)}
+                        </span>
+                        `
+                    )
+                    .join("")
+                :
+                `
+                <span class="success">
+                    Available
+                </span>
+                `;
+
+
+            row.innerHTML = `
+
+                <td>
+                    ${index + 1}
+                </td>
+
+                <td>
+                    <b>
+                        ${escapeHtml(
+                            teacher.name
+                        )}
+                    </b>
+                </td>
+
+                <td>
+                    <div class="subject-tags">
+                        ${subjectsHtml}
+                    </div>
+                </td>
+
+                <td>
+                    ${classesHtml}
+                </td>
+
+                <td>
+                    ${leaveHtml}
+                </td>
+
+                <td>
+                    ${
+                        teacher.leavePeriods.length
+                        ?
+                        teacher.leavePeriods.join(", ")
+                        :
+                        "None"
+                    }
+                </td>
+
+                <td>
+
+                    <button
+                        class="btn-danger"
+                        onclick="removeTeacher(${index})"
+                    >
+                        Delete
+                    </button>
+
+                </td>
+
+            `;
+
+
+            tbody.appendChild(
+                row
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   CONFIGURATION SELECTS
+========================================================= */
+
+function renderClassSelects(){
+
+    const select =
+        document.getElementById(
+            "configClass"
+        );
+
+
+    select.innerHTML = `
+
+        <option value="">
+            Select Class
+        </option>
+
+    `;
+
+
+    classes.forEach(
+        cls => {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+
+            option.value =
+                cls.id;
+
+
+            option.textContent =
+                `Grade ${cls.grade} - ${cls.name}`;
+
+
+            select.appendChild(
+                option
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   CONFIG SUBJECT
+========================================================= */
+
+function renderConfigSubject(){
+
+    const select =
+        document.getElementById(
+            "configSubject"
+        );
+
+
+    select.innerHTML = `
+
+        <option value="">
+            Select Subject
+        </option>
+
+    `;
+
+
+    subjects.forEach(
+        subject => {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+
+            option.value =
+                subject;
+
+
+            option.textContent =
+                subject;
+
+
+            select.appendChild(
+                option
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   AUTOMATIC TEACHER DETECTION
+========================================================= */
+
+function updateTeacherOptions(){
+
+    const classId =
+        document.getElementById(
+            "configClass"
+        ).value;
+
+
+    const subject =
+        document.getElementById(
+            "configSubject"
+        ).value;
+
+
+    const teacherSelect =
+        document.getElementById(
+            "configTeacher"
+        );
+
+
+    teacherSelect.innerHTML = `
+
+        <option value="">
+            Select Teacher
+        </option>
+
+    `;
+
+
+    if(
+        !classId ||
+        !subject
+    ){
+
+        return;
+
+    }
+
+
+    const suitable =
+        findSuitableTeachers(
+            classId,
+            subject
+        );
+
+
+    suitable.forEach(
+        teacher => {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+
+            option.value =
+                teacher.id;
+
+
+            option.textContent =
+                teacher.name;
+
+
+            teacherSelect.appendChild(
+                option
+            );
+
+        }
+    );
+
+
+    /*
+        Automatically select teacher if
+        exactly one teacher is suitable.
+    */
+
+    if(
+        suitable.length === 1
+    ){
+
+        teacherSelect.value =
+            suitable[0].id;
+
+    }
+
+}
+
+
+/* =========================================================
+   ADD SUBJECT CONFIGURATION
+========================================================= */
+
+function addSubjectConfig(){
+
+    const classId =
+        document.getElementById(
+            "configClass"
+        ).value;
+
+
+    const subject =
+        document.getElementById(
+            "configSubject"
+        ).value;
+
+
+    const teacherId =
+        document.getElementById(
+            "configTeacher"
+        ).value;
+
+
+    const periods =
+        parseInt(
+            document.getElementById(
+                "configPeriods"
+            ).value
+        );
+
+
+    const maxPerDay =
+        parseInt(
+            document.getElementById(
+                "configMaxDay"
+            ).value
+        );
+
+
+    if(!classId){
+
+        alert(
+            "Select a class."
+        );
+
+        return;
+
+    }
+
+
+    if(!subject){
+
+        alert(
+            "Select a subject."
+        );
+
+        return;
+
+    }
+
+
+    if(!teacherId){
+
+        alert(
+            "Select a teacher."
+        );
+
+        return;
+
+    }
+
+
+    if(
+        !periods ||
+        periods < 1
+    ){
+
+        alert(
+            "Enter valid periods per week."
+        );
+
+        return;
+
+    }
+
+
+    if(
+        !maxPerDay ||
+        maxPerDay < 1
+    ){
+
+        alert(
+            "Enter valid maximum periods per day."
+        );
+
+        return;
+
+    }
+
+
+    const teacher =
+        getTeacherById(
+            teacherId
+        );
+
+
+    if(
+        !teacherCanTeachSubject(
+            teacher,
+            subject
+        )
+    ){
+
+        alert(
+            "This teacher cannot teach this subject."
+        );
+
+        return;
+
+    }
+
+
+    if(
+        !teacherCanTeachClass(
+            teacher,
+            classId
+        )
+    ){
+
+        alert(
+            "This teacher cannot teach this class."
+        );
+
+        return;
+
+    }
+
+
+    const exists =
+        subjectConfigs.some(
+            config =>
+
+                config.classId === classId
+                &&
+                config.subject === subject
+
+        );
+
+
+    if(exists){
+
+        alert(
+            "This class already has this subject configured."
+        );
+
+        return;
+
+    }
+
+
+    subjectConfigs.push({
+
+        id:id(),
+
+        classId:classId,
+
+        subject:subject,
+
+        teacherId:teacherId,
+
+        periods:periods,
+
+        maxPerDay:maxPerDay
+
+    });
+
+
+    document.getElementById(
+        "configTeacher"
+    ).innerHTML = `
+
+        <option value="">
+            Select Teacher
+        </option>
+
+    `;
+
+
+    refresh();
+
+}
+
+
+/* =========================================================
+   DELETE CONFIG
+========================================================= */
+
+function removeConfig(index){
+
+    subjectConfigs.splice(
+        index,
+        1
+    );
+
+
+    timetable = {};
+
+    generated = false;
+
+
+    refresh();
+
+}
+
+
+/* =========================================================
+   RENDER CONFIGURATION
+========================================================= */
+
+function renderConfigs(){
+
+    const tbody =
+        document.getElementById(
+            "configTable"
+        );
+
+
+    tbody.innerHTML = "";
+
+
+    subjectConfigs.forEach(
+        (config,index) => {
+
+            const cls =
+                getClassById(
+                    config.classId
+                );
+
+
+            const teacher =
+                getTeacherById(
+                    config.teacherId
+                );
+
+
+            const row =
+                document.createElement(
+                    "tr"
+                );
+
+
+            row.innerHTML = `
+
+                <td>
+                    ${index + 1}
+                </td>
+
+                <td>
+                    ${
+                        cls
+                        ?
+                        `Grade ${escapeHtml(cls.grade)}-${escapeHtml(cls.name)}`
+                        :
+                        escapeHtml(config.classId)
+                    }
+                </td>
+
+                <td>
+                    <b>
+                        ${escapeHtml(
+                            config.subject
+                        )}
+                    </b>
+                </td>
+
+                <td>
+                    ${
+                        teacher
+                        ?
+                        escapeHtml(
+                            teacher.name
+                        )
+                        :
+                        "Unknown"
+                    }
+                </td>
+
+                <td>
+                    ${config.periods}
+                </td>
+
+                <td>
+                    ${config.maxPerDay}
+                </td>
+
+                <td>
+
+                    <button
+                        class="btn-danger"
+                        onclick="removeConfig(${index})"
+                    >
+                        Delete
+                    </button>
+
+                </td>
+
+            `;
+
+
+            tbody.appendChild(
+                row
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   SUBJECT LIST
+========================================================= */
+
+function renderSubjects(){
+
+    const container =
+        document.getElementById(
+            "subjectList"
+        );
+
+
+    container.innerHTML = "";
+
+
+    subjects.forEach(
+        (subject,index) => {
+
+            const span =
+                document.createElement(
+                    "span"
+                );
+
+
+            span.className =
+                "badge";
+
+
+            span.innerHTML = `
+
+                ${escapeHtml(subject)}
+
+                <button
+                    class="btn-danger"
+                    style="
+                        padding:2px 6px;
+                        margin-left:4px;
+                    "
+                    onclick="removeSubject(${index})"
+                >
+                    ×
+                </button>
+
+            `;
+
+
+            container.appendChild(
+                span
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   REFRESH EVERYTHING
+========================================================= */
+
+function refresh(){
+
+    renderSubjects();
+
+    renderTeacherSubjectCheckboxes();
+
+    renderTeachers();
+
+    renderClassTeacherSelect();
+
+    renderClassTeacherSubjects();
+
+    renderClasses();
+
+    renderClassSelects();
+
+    renderConfigSubject();
+
+    renderConfigs();
+
+    updateTeacherOptions();
+
+}
+
+
+/* =========================================================
+   EMPTY TIMETABLE
+========================================================= */
+
+function createEmptyTimetable(){
+
+    const result = {};
+
+
+    classes.forEach(
+        cls => {
+
+            result[cls.id] = {};
+
+
+            DAYS.forEach(
+                day => {
+
+                    result[cls.id][day] = [];
+
+
+                    for(
+                        let period = 1;
+                        period <=
+                        PERIODS_PER_DAY[day];
+                        period++
+                    ){
+
+                        result[
+                            cls.id
+                        ][day][period] = null;
+
+                    }
+
+                }
+            );
+
+        }
+    );
+
+
+    return result;
+
+}
+
+
+/* =========================================================
+   CLASS SLOT
+========================================================= */
+
+function classSlotFree(
+    result,
+    classId,
+    day,
+    period
+){
+
+    return !result[
+        classId
+    ][day][period];
+
+}
+
+
+/* =========================================================
+   TEACHER SLOT
+========================================================= */
+
+function teacherSlotFree(
+    result,
+    teacherId,
+    day,
+    period
+){
+
+    for(
+        const classId of Object.keys(
+            result
+        )
+    ){
+
+        const lesson =
+            result[classId]
+                ?.[day]
+                ?.[period];
+
+
+        if(
+            lesson &&
+            lesson.teacherId === teacherId
+        ){
+
+            return false;
+
+        }
+
+    }
+
+
+    return true;
+
+}
+
+
+/* =========================================================
+   TEACHER AVAILABLE
+========================================================= */
+
+function teacherAvailable(
+    teacher,
+    day,
+    period
+){
+
+    if(
+        teacher.leaveDays.includes(
+            day
+        )
+    ){
+
+        return false;
+
+    }
+
+
+    if(
+        teacher.leavePeriods.includes(
+            period
+        )
+    ){
+
+        return false;
+
+    }
+
+
+    return true;
+
+}
+
+
+/* =========================================================
+   SUBJECT DAILY COUNT
+========================================================= */
+
+function subjectCountOnDay(
+    result,
+    classId,
+    day,
+    subject
+){
+
+    let count = 0;
+
+
+    const periods =
+        result[classId][day];
+
+
+    periods.forEach(
+        lesson => {
+
+            if(
+                lesson &&
+                lesson.subject === subject
+            ){
+
+                count++;
+
+            }
+
+        }
+    );
+
+
+    return count;
+
+}
+
+
+/* =========================================================
+   TEACHER DAILY LOAD
+========================================================= */
+
+function teacherDailyLoad(
+    result,
+    teacherId,
+    day
+){
+
+    let total = 0;
+
+
+    Object.keys(result)
+        .forEach(
+            classId => {
+
+                const periods =
+                    result[classId]?.[day] || [];
+
+
+                periods.forEach(
+                    lesson => {
+
+                        if(
+                            lesson &&
+                            lesson.teacherId ===
+                            teacherId
+                        ){
+
+                            total++;
+
+                        }
+
+                    }
+                );
+
+            }
+        );
+
+
+    return total;
+
+}
+
+
+/* =========================================================
+   LESSON
+========================================================= */
+
+function makeLesson(config){
+
+    return {
+
+        configId:
+            config.id,
+
+        subject:
+            config.subject,
+
+        teacherId:
+            config.teacherId,
+
+        teacherName:
+            getTeacherName(
+                config.teacherId
+            )
+
+    };
+
+}
+
+
+/* =========================================================
+   GENERATE ONE PASS
+========================================================= */
+
+function generatePass(pass){
+
+    const result =
+        createEmptyTimetable();
+
+
+    const shortage = [];
+
+
+    const configs =
+        [...subjectConfigs]
+        .sort(
+            (a,b) => {
+
+                const teacherA =
+                    getTeacherById(
+                        a.teacherId
+                    );
+
+
+                const teacherB =
+                    getTeacherById(
+                        b.teacherId
+                    );
+
+
+                const restrictionsA =
+                    (
+                        teacherA?.leaveDays
+                            ?.length || 0
+                    )
+                    +
+                    (
+                        teacherA?.leavePeriods
+                            ?.length || 0
+                    );
+
+
+                const restrictionsB =
+                    (
+                        teacherB?.leaveDays
+                            ?.length || 0
+                    )
+                    +
+                    (
+                        teacherB?.leavePeriods
+                            ?.length || 0
+                    );
+
+
+                return (
+                    (
+                        b.periods +
+                        restrictionsB
+                    )
+                    -
+                    (
+                        a.periods +
+                        restrictionsA
+                    )
+                );
+
+            }
+        );
+
+
+    configs.forEach(
+        config => {
+
+            const teacher =
+                getTeacherById(
+                    config.teacherId
+                );
+
+
+            if(!teacher){
+
+                shortage.push({
+
+                    config:config,
+
+                    scheduled:0,
+
+                    shortage:
+                        config.periods,
+
+                    reason:
+                        "Teacher not found"
+
+                });
+
+                return;
+
+            }
+
+
+            let scheduled = 0;
+
+
+            for(
+                let copy=0;
+                copy<config.periods;
+                copy++
+            ){
+
+                let placed = false;
+
+
+                let days =
+                    [...DAYS];
+
+
+                if(pass > 0){
+
+                    days.sort(
+                        () =>
+                            Math.random()-.5
+                    );
+
+                }
+
+
+                for(
+                    const day of days
+                ){
+
+                    if(
+                        teacher.leaveDays
+                            .includes(day)
+                    ){
+
+                        continue;
+
+                    }
+
+
+                    if(
+                        subjectCountOnDay(
+                            result,
+                            config.classId,
+                            day,
+                            config.subject
+                        )
+                        >=
+                        config.maxPerDay
+                    ){
+
+                        continue;
+
+                    }
+
+
+                    let periods = [];
+
+
+                    for(
+                        let p=1;
+                        p<=PERIODS_PER_DAY[day];
+                        p++
+                    ){
+
+                        periods.push(p);
+
+                    }
+
+
+                    if(pass > 0){
+
+                        periods.sort(
+                            () =>
+                                Math.random()-.5
+                        );
+
+                    }
+
+
+                    for(
+                        const period of periods
+                    ){
+
+                        if(
+                            !classSlotFree(
+                                result,
+                                config.classId,
+                                day,
+                                period
+                            )
+                        ){
+
+                            continue;
+
+                        }
+
+
+                        if(
+                            !teacherSlotFree(
+                                result,
+                                config.teacherId,
+                                day,
+                                period
+                            )
+                        ){
+
+                            continue;
+
+                        }
+
+
+                        if(
+                            !teacherAvailable(
+                                teacher,
+                                day,
+                                period
+                            )
+                        ){
+
+                            continue;
+
+                        }
+
+
+                        /*
+                            Avoid overloading a teacher
+                            on one day.
+                        */
+
+                        const dailyLoad =
+                            teacherDailyLoad(
+                                result,
+                                config.teacherId,
+                                day
+                            );
+
+
+                        const maxLoad =
+                            pass === 0
+                            ? 6
+                            : pass === 1
+                            ? 7
+                            : 9;
+
+
+                        if(
+                            dailyLoad >= maxLoad
+                        ){
+
+                            continue;
+
+                        }
+
+
+                        result[
+                            config.classId
+                        ][day][period] =
+                            makeLesson(config);
+
+
+                        scheduled++;
+
+                        placed = true;
+
+                        break;
+
+                    }
+
+
+                    if(placed){
+
+                        break;
+
+                    }
+
+                }
+
+            }
+
+
+            if(
+                scheduled <
+                config.periods
+            ){
+
+                shortage.push({
+
+                    config:config,
+
+                    scheduled:scheduled,
+
+                    shortage:
+                        config.periods -
+                        scheduled,
+
+                    reason:
+                        "Not enough available periods"
+
+                });
+
+            }
+
+        }
+    );
+
+
+    return {
+
+        result:result,
+
+        shortage:shortage
+
+    };
+
+}
+
+
+/* =========================================================
+   SCORE
+========================================================= */
+
+function timetableScore(data){
+
+    let score = 0;
+
+
+    data.shortage.forEach(
+        item => {
+
+            score -=
+                item.shortage * 100;
+
+        }
+    );
+
+
+    Object.keys(
+        data.result
+    )
+    .forEach(
+        classId => {
+
+            DAYS.forEach(
+                day => {
+
+                    const arr =
+                        data.result[
+                            classId
+                        ][day];
+
+
+                    for(
+                        let p=1;
+                        p<arr.length;
+                        p++
+                    ){
+
+                        const a =
+                            arr[p];
+
+                        const b =
+                            arr[p+1];
+
+
+                        if(
+                            a &&
+                            b &&
+                            a.subject ===
+                            b.subject
+                        ){
+
+                            score -= 5;
+
+                        }
+
+                    }
+
+                }
+            );
+
+        }
+    );
+
+
+    score +=
+        subjectConfigs.length * 20;
+
+
+    return score;
+
+}
+
+
+/* =========================================================
+   GENERATE TIMETABLE
+========================================================= */
+
+function generateTimetable(){
+
+    if(classes.length === 0){
+
+        alert(
+            "Add at least one class."
+        );
+
+        return;
+
+    }
+
+
+    if(subjectConfigs.length === 0){
+
+        alert(
+            "Add subject configurations."
+        );
+
+        return;
+
+    }
+
+
+    const errors =
+        validateAssignments();
+
+
+    if(errors.length){
+
+        alert(
+            "Please correct these problems:\n\n"
+            +
+            errors.join("\n")
+        );
+
+        return;
+
+    }
+
+
+    let best = null;
+
+
+    /*
+        Multiple attempts.
+    */
+
+    for(
+        let pass=0;
+        pass<8;
+        pass++
+    ){
+
+        const candidate =
+            generatePass(
+                pass % 3
+            );
+
+
+        const score =
+            timetableScore(
+                candidate
+            );
+
+
+        if(
+            !best ||
+            score > best.score
+        ){
+
+            best = {
+
+                ...candidate,
+
+                score:score
+
+            };
+
+        }
+
+    }
+
+
+    timetable =
+        best.result;
+
+
+    generated = true;
+
+
+    renderResults();
+
+}
+
+
+/* =========================================================
+   VALIDATE ASSIGNMENTS
+========================================================= */
+
+function validateAssignments(){
+
+    const errors = [];
+
+
+    subjectConfigs.forEach(
+        config => {
+
+            const teacher =
+                getTeacherById(
+                    config.teacherId
+                );
+
+
+            if(!teacher){
+
+                errors.push(
+                    `${config.classId} - ${config.subject}: teacher missing`
+                );
+
+                return;
+
+            }
+
+
+            if(
+                !teacherCanTeachSubject(
+                    teacher,
+                    config.subject
+                )
+            ){
+
+                errors.push(
+                    `${teacher.name} cannot teach ${config.subject}`
+                );
+
+            }
+
+
+            if(
+                !teacherCanTeachClass(
+                    teacher,
+                    config.classId
+                )
+            ){
+
+                errors.push(
+                    `${teacher.name} cannot teach ${config.classId}`
+                );
+
+            }
+
+        }
+    );
+
+
+    return errors;
+
+}
+
+
+/* =========================================================
+   SHORTAGE REPORT
+========================================================= */
+
+function createShortageReport(){
+
+    const shortage = [];
+
+
+    subjectConfigs.forEach(
+        config => {
+
+            let scheduled = 0;
+
+
+            DAYS.forEach(
+                day => {
+
+                    const periods =
+                        timetable[
+                            config.classId
+                        ]?.[day] || [];
+
+
+                    periods.forEach(
+                        lesson => {
+
+                            if(
+                                lesson &&
+                                lesson.configId ===
+                                config.id
+                            ){
+
+                                scheduled++;
+
+                            }
+
+                        }
+                    );
+
+                }
+            );
+
+
+            if(
+                scheduled <
+                config.periods
+            ){
+
+                shortage.push({
+
+                    classId:
+                        config.classId,
+
+                    subject:
+                        config.subject,
+
+                    teacher:
+                        getTeacherName(
+                            config.teacherId
+                        ),
+
+                    required:
+                        config.periods,
+
+                    scheduled:
+                        scheduled,
+
+                    shortage:
+                        config.periods -
+                        scheduled
+
+                });
+
+            }
+
+        }
+    );
+
+
+    return shortage;
+
+}
+
+
+/* =========================================================
+   RENDER RESULTS
+========================================================= */
+
+function renderResults(){
+
+    const container =
+        document.getElementById(
+            "results"
+        );
+
+
+    const shortage =
+        createShortageReport();
+
+
+    let html = "";
+
+
+    /* =====================================================
+       STATISTICS
+    ===================================================== */
+
+    html += `
+
+        <div class="stats">
+
+            <div class="stat">
+
+                <div class="stat-number">
+                    ${classes.length}
+                </div>
+
+                <div class="stat-label">
+                    Classes
+                </div>
+
+            </div>
+
+
+            <div class="stat">
+
+                <div class="stat-number">
+                    ${teachers.length}
+                </div>
+
+                <div class="stat-label">
+                    Teachers
+                </div>
+
+            </div>
+
+
+            <div class="stat">
+
+                <div class="stat-number">
+                    ${subjects.length}
+                </div>
+
+                <div class="stat-label">
+                    Subjects
+                </div>
+
+            </div>
+
+
+            <div class="stat">
+
+                <div class="stat-number">
+                    ${subjectConfigs.length}
+                </div>
+
+                <div class="stat-label">
+                    Configurations
+                </div>
+
+            </div>
+
+        </div>
+
+    `;
+
+
+    /* =====================================================
+       CLASS TIMETABLES
+    ===================================================== */
+
+    html += `
+
+        <div class="card print-area">
+
+            <h2>
+                📅 Class Timetables
+            </h2>
+
+    `;
+
+
+    classes.forEach(
+        cls => {
+
+            const classTeacher =
+                getTeacherById(
+                    cls.teacherId
+                );
+
+
+            html += `
+
+                <h3 class="section-title">
+
+                    Grade
+                    ${escapeHtml(cls.grade)}
+                    -
+                    ${escapeHtml(cls.name)}
+
+                    ${
+                        classTeacher
+                        ?
+                        ` | Class Teacher:
+                          ${escapeHtml(classTeacher.name)}`
+                        :
+                        ""
+                    }
+
+                </h3>
+
+
+                <div class="table-wrapper">
+
+                    <table class="timetable">
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Period
+                                </th>
+
+                                ${DAYS.map(
+                                    day =>
+                                    `<th>${day}</th>`
+                                ).join("")}
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+            `;
+
+
+            for(
+                let period=1;
+                period<=9;
+                period++
+            ){
+
+                html += `
+
+                    <tr>
+
+                        <th>
+                            P${period}
+                        </th>
+
+                `;
+
+
+                DAYS.forEach(
+                    day => {
+
+                        if(
+                            period >
+                            PERIODS_PER_DAY[
+                                day
+                            ]
+                        ){
+
+                            html += `
+                                <td>
+                                    -
+                                </td>
+                            `;
+
+                            return;
+
+                        }
+
+
+                        const lesson =
+                            timetable[
+                                cls.id
+                            ]?.[
+                                day
+                            ]?.[
+                                period
+                            ];
+
+
+                        if(!lesson){
+
+                            html += `
+
+                                <td>
+
+                                    <span class="free">
+                                        Free
+                                    </span>
+
+                                </td>
+
+                            `;
+
+                            return;
+
+                        }
+
+
+                        html += `
+
+                            <td>
+
+                                <div class="lesson">
+
+                                    <div class="lesson-subject">
+
+                                        ${escapeHtml(
+                                            lesson.subject
+                                        )}
+
+                                    </div>
+
+                                    <div class="lesson-teacher">
+
+                                        ${escapeHtml(
+                                            lesson.teacherName
+                                        )}
+
+                                    </div>
+
+                                </div>
+
+                            </td>
+
+                        `;
+
+                    }
+                );
+
+
+                html += `
+
+                    </tr>
+
+                `;
+
+            }
+
+
+            html += `
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            `;
+
+        }
+    );
+
+
+    html += `
+
+        </div>
+
+    `;
+
+
+    /* =====================================================
+       SHORTAGE
+    ===================================================== */
+
+    html += `
+
+        <div class="card">
+
+            <h2>
+                ⚠️ Shortage Report
+            </h2>
+
+    `;
+
+
+    if(shortage.length === 0){
+
+        html += `
+
+            <div class="alert alert-success">
+
+                <b>✓ No shortage.</b>
+
+                All configured subject periods were scheduled.
+
+            </div>
+
+        `;
+
+    }else{
+
+        html += `
+
+            <div class="alert alert-warning">
+
+                Some periods could not be scheduled because
+                of teacher availability, leave days,
+                teacher clashes or limited periods.
+
+            </div>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Class
+                            </th>
+
+                            <th>
+                                Subject
+                            </th>
+
+                            <th>
+                                Teacher
+                            </th>
+
+                            <th>
+                                Required
+                            </th>
+
+                            <th>
+                                Scheduled
+                            </th>
+
+                            <th>
+                                Shortage
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+        `;
+
+
+        shortage.forEach(
+            item => {
+
+                html += `
+
+                    <tr>
+
+                        <td>
+                            ${escapeHtml(
+                                item.classId
+                            )}
+                        </td>
+
+                        <td>
+                            ${escapeHtml(
+                                item.subject
+                            )}
+                        </td>
+
+                        <td>
+                            ${escapeHtml(
+                                item.teacher
+                            )}
+                        </td>
+
+                        <td>
+                            ${item.required}
+                        </td>
+
+                        <td>
+                            ${item.scheduled}
+                        </td>
+
+                        <td class="shortage">
+                            ${item.shortage}
+                        </td>
+
+                    </tr>
+
+                `;
+
+            }
+        );
+
+
+        html += `
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        `;
+
+    }
+
+
+    html += `
+
+        </div>
+
+    `;
+
+
+    /* =====================================================
+       TEACHER WORKLOAD
+    ===================================================== */
+
+    html += `
+
+        <div class="card">
+
+            <h2>
+                👨‍🏫 Teacher Workload
+            </h2>
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Teacher
+                            </th>
+
+                            ${DAYS.map(
+                                day =>
+                                `<th>${day}</th>`
+                            ).join("")}
+
+                            <th>
+                                Total
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+    `;
+
+
+    teachers.forEach(
+        teacher => {
+
+            let total = 0;
+
+
+            html += `
+
+                <tr>
+
+                    <td>
+                        <b>
+                            ${escapeHtml(
+                                teacher.name
+                            )}
+                        </b>
+                    </td>
+
+            `;
+
+
+            DAYS.forEach(
+                day => {
+
+                    const load =
+                        teacherDailyLoad(
+                            timetable,
+                            teacher.id,
+                            day
+                        );
+
+
+                    total += load;
+
+
+                    html += `
+
+                        <td>
+                            ${load}
+                        </td>
+
+                    `;
+
+                }
+            );
+
+
+            html += `
+
+                    <td>
+                        <b>
+                            ${total}
+                        </b>
+                    </td>
+
+                </tr>
+
+            `;
+
+        }
+    );
+
+
+    html += `
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    `;
+
+
+    container.innerHTML =
+        html;
+
+}
+
+
+/* =========================================================
+   CHECK SETUP
+========================================================= */
+
+function checkSetup(){
+
+    const message =
+        document.getElementById(
+            "setupMessage"
+        );
+
+
+    const errors = [];
+
+
+    if(
+        !document
+        .getElementById(
+            "schoolName"
+        )
+        .value
+        .trim()
+    ){
+
+        errors.push(
+            "School name is empty."
+        );
+
+    }
+
+
+    if(
+        teachers.length === 0
+    ){
+
+        errors.push(
+            "No teachers added."
+        );
+
+    }
+
+
+    if(
+        classes.length === 0
+    ){
+
+        errors.push(
+            "No classes added."
+        );
+
+    }
+
+
+    if(
+        subjectConfigs.length === 0
+    ){
+
+        errors.push(
+            "No subject configurations added."
+        );
+
+    }
+
+
+    errors.push(
+        ...validateAssignments()
+    );
+
+
+    if(errors.length){
+
+        message.innerHTML = `
+
+            <div class="alert alert-warning">
+
+                <b>Setup warnings:</b>
+
+                <ul>
+
+                    ${
+                        errors
+                        .map(
+                            error =>
+                            `<li>${escapeHtml(error)}</li>`
+                        )
+                        .join("")
+                    }
+
+                </ul>
+
+            </div>
+
+        `;
+
+    }else{
+
+        message.innerHTML = `
+
+            <div class="alert alert-success">
+
+                <b>✓ Setup is ready.</b>
+
+                You can generate the timetable.
+
+            </div>
+
+        `;
+
+    }
+
+}
+
+
+/* =========================================================
+   SAVE
+========================================================= */
+
+function saveData(){
+
+    const data = {
+
+        schoolName:
+            document.getElementById(
+                "schoolName"
+            ).value,
+
+        schoolAddress:
+            document.getElementById(
+                "schoolAddress"
+            ).value,
+
+        subjects:subjects,
+
+        teachers:teachers,
+
+        classes:classes,
+
+        subjectConfigs:
+            subjectConfigs,
+
+        timetable:timetable,
+
+        generated:generated
+
+    };
+
+
+    localStorage.setItem(
+        "schoolTimetableData",
+        JSON.stringify(data)
+    );
+
+
+    alert(
+        "School data saved successfully."
+    );
+
+}
+
+
+/* =========================================================
+   LOAD
+========================================================= */
+
+function loadData(){
+
+    const saved =
+        localStorage.getItem(
+            "schoolTimetableData"
+        );
+
+
+    if(!saved){
+
+        alert(
+            "No saved data found."
+        );
+
+        return;
+
+    }
+
+
+    try{
+
+        const data =
+            JSON.parse(saved);
+
+
+        document.getElementById(
+            "schoolName"
+        ).value =
+            data.schoolName || "";
+
+
+        document.getElementById(
+            "schoolAddress"
+        ).value =
+            data.schoolAddress || "";
+
+
+        subjects =
+            data.subjects || [];
+
+
+        teachers =
+            data.teachers || [];
+
+
+        classes =
+            data.classes || [];
+
+
+        subjectConfigs =
+            data.subjectConfigs || [];
+
+
+        timetable =
+            data.timetable || {};
+
+
+        generated =
+            data.generated || false;
+
+
+        refresh();
+
+
+        if(generated){
+
+            renderResults();
+
+        }
+
+
+        alert(
+            "Saved school data loaded."
+        );
+
+    }catch(error){
+
+        alert(
+            "Unable to load saved data."
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   CLEAR ALL
+========================================================= */
+
+function clearAllData(){
+
+    if(
+        !confirm(
+            "Are you sure you want to clear all school data?"
+        )
+    ){
+
+        return;
+
+    }
+
+
+    subjects = [
+
+        "Tamil",
+        "English",
+        "Mathematics",
+        "Science",
+        "Islam",
+        "History",
+        "Geography",
+        "Civic Education",
+        "ICT",
+        "Health & Physical Education",
+        "Practical & Technical Skills",
+        "Aesthetic Education"
+
+    ];
+
+
+    teachers = [];
+
+    classes = [];
+
+    subjectConfigs = [];
+
+    timetable = {};
+
+    generated = false;
+
+
+    document.getElementById(
+        "schoolName"
+    ).value = "";
+
+
+    document.getElementById(
+        "schoolAddress"
+    ).value = "";
+
+
+    document.getElementById(
+        "results"
+    ).innerHTML = "";
+
+
+    localStorage.removeItem(
+        "schoolTimetableData"
+    );
+
+
+    refresh();
+
+}
+
+
+/* =========================================================
+   BALANCED TEACHER SELECTION
+========================================================= */
+
+function chooseBalancedTeacher(
+    teacherList
+){
+
+    if(
+        !teacherList.length
+    ){
+
+        return null;
+
+    }
+
+
+    const counts = {};
+
+
+    teacherList.forEach(
+        teacher => {
+
+            counts[
+                teacher.id
+            ] =
+                subjectConfigs.filter(
+                    config =>
+                        config.teacherId ===
+                        teacher.id
+                ).length;
+
+        }
+    );
+
+
+    let lowest =
+        Math.min(
+            ...teacherList.map(
+                teacher =>
+                    counts[
+                        teacher.id
+                    ]
+            )
+        );
+
+
+    const candidates =
+        teacherList.filter(
+            teacher =>
+                counts[
+                    teacher.id
+                ] === lowest
+        );
+
+
+    return candidates[
+        Math.floor(
+            Math.random() *
+            candidates.length
+        )
+    ];
+
+}
+
+
+/* =========================================================
+   DEMO SCHOOL
+========================================================= */
+
+function createDemoSchool(){
+
+    document.getElementById(
+        "schoolName"
+    ).value =
+        "Kahatagasdigiliya National School";
+
+
+    document.getElementById(
+        "schoolAddress"
+    ).value =
+        "Kahatagasdigiliya, Sri Lanka";
+
+
+    /*
+        Reset only current working data.
+    */
+
+    teachers = [];
+
+    classes = [];
+
+    subjectConfigs = [];
+
+    timetable = {};
+
+    generated = false;
+
+
+    /* =====================================================
+       DEMO TEACHERS
+    ===================================================== */
+
+    const demoTeachers = [
+
+        {
+            name:"Mr. Kumar",
+
+            subjects:[
+                "Tamil"
+            ],
+
+            classes:[
+                "6A",
+                "7A"
+            ],
+
+            leaveDays:[
+                "Friday"
+            ],
+
+            leavePeriods:[]
+
+        },
+
+
+        {
+            name:"Ms. Ayesha",
+
+            subjects:[
+                "English"
+            ],
+
+            classes:[
+                "6A",
+                "7A",
+                "8A"
+            ],
+
+            leaveDays:[],
+
+            leavePeriods:[
+                1
+            ]
+
+        },
+
+
+        {
+            name:"Mr. Perera",
+
+            subjects:[
+                "Mathematics",
+                "ICT"
+            ],
+
+            classes:[
+                "6A",
+                "7A",
+                "8A",
+                "9A"
+            ],
+
+            leaveDays:[],
+
+            leavePeriods:[
+                9
+            ]
+
+        },
+
+
+        {
+            name:"Mr. Silva",
+
+            subjects:[
+                "Science"
+            ],
+
+            classes:[
+                "6A",
+                "7A",
+                "8A",
+                "9A",
+                "10A"
+            ],
+
+            leaveDays:[
+                "Wednesday"
+            ],
+
+            leavePeriods:[]
+
+        },
+
+
+        {
+            name:"Mr. Rahman",
+
+            subjects:[
+                "Islam"
+            ],
+
+            classes:[
+                "6A",
+                "7A",
+                "8A",
+                "9A",
+                "10A",
+                "11A"
+            ],
+
+            leaveDays:[],
+
+            leavePeriods:[
+                3,
+                4
+            ]
+
+        },
+
+
+        {
+            name:"Mr. Fernando",
+
+            subjects:[
+                "History",
+                "Civic Education"
+            ],
+
+            classes:[
+                "7A",
+                "8A",
+                "9A",
+                "10A",
+                "11A"
+            ],
+
+            leaveDays:[
+                "Tuesday"
+            ],
+
+            leavePeriods:[]
+
+        },
+
+
+        {
+            name:"Ms. Fathima",
+
+            subjects:[
+                "Geography"
+            ],
+
+            classes:[
+                "6A",
+                "8A",
+                "10A",
+                "11A"
+            ],
+
+            leaveDays:[],
+
+            leavePeriods:[
+                1,
+                2
+            ]
+
+        },
+
+
+        {
+            name:"Mr. Nimal",
+
+            subjects:[
+                "ICT",
+                "Practical & Technical Skills"
+            ],
+
+            classes:[
+                "8A",
+                "9A",
+                "10A",
+                "11A"
+            ],
+
+            leaveDays:[],
+
+            leavePeriods:[
+                8,
+                9
+            ]
+
+        },
+
+
+        {
+            name:"Mr. Sameer",
+
+            subjects:[
+                "Health & Physical Education"
+            ],
+
+            classes:[
+                "6A",
+                "7A",
+                "9A",
+                "11A"
+            ],
+
+            leaveDays:[
+                "Friday"
+            ],
+
+            leavePeriods:[]
+
+        },
+
+
+        {
+            name:"Ms. Devi",
+
+            subjects:[
+                "Aesthetic Education"
+            ],
+
+            classes:[
+                "6A",
+                "7A",
+                "8A",
+                "10A"
+            ],
+
+            leaveDays:[
+                "Monday"
+            ],
+
+            leavePeriods:[]
+
+        },
+
+
+        /*
+            One teacher can teach MANY subjects.
+        */
+
+        {
+            name:"Mr. Mohamed",
+
+            subjects:[
+                "Mathematics",
+                "Science",
+                "ICT"
+            ],
+
+            classes:[
+                "7A",
+                "8A",
+                "9A",
+                "10A"
+            ],
+
+            leaveDays:[],
+
+            leavePeriods:[]
+
+        },
+
+
+        {
+            name:"Ms. Priya",
+
+            subjects:[
+                "English",
+                "Tamil"
+            ],
+
+            classes:[
+                "9A",
+                "10A",
+                "11A"
+            ],
+
+            leaveDays:[],
+
+            leavePeriods:[]
+
+        }
+
+    ];
+
+
+    demoTeachers.forEach(
+        teacher => {
+
+            teachers.push({
+
+                id:id(),
+
+                name:teacher.name,
+
+                subjects:[
+                    ...teacher.subjects
+                ],
+
+                classes:[
+                    ...teacher.classes
+                ],
+
+                leaveDays:[
+                    ...teacher.leaveDays
+                ],
+
+                leavePeriods:[
+                    ...teacher.leavePeriods
+                ]
+
+            });
+
+        }
+    );
+
+
+    /* =====================================================
+       DEMO CLASSES
+    ===================================================== */
+
+    for(
+        let grade=6;
+        grade<=11;
+        grade++
+    ){
+
+        classes.push({
+
+            id:`${grade}A`,
+
+            grade:String(
+                grade
+            ),
+
+            name:"A",
+
+            teacherId:"",
+
+            teacherSubject:""
+
+        });
+
+    }
+
+
+    /*
+        Assign different suitable class teachers.
+    */
+
+    const classTeacherPreferences = [
+
+        {
+            classId:"6A",
+            teacherName:"Mr. Kumar",
+            subject:"Tamil"
+        },
+
+        {
+            classId:"7A",
+            teacherName:"Ms. Ayesha",
+            subject:"English"
+        },
+
+        {
+            classId:"8A",
+            teacherName:"Mr. Perera",
+            subject:"Mathematics"
+        },
+
+        {
+            classId:"9A",
+            teacherName:"Mr. Mohamed",
+            subject:"Mathematics"
+        },
+
+        {
+            classId:"10A",
+            teacherName:"Mr. Silva",
+            subject:"Science"
+        },
+
+        {
+            classId:"11A",
+            teacherName:"Mr. Rahman",
+            subject:"Islam"
+        }
+
+    ];
+
+
+    classTeacherPreferences.forEach(
+        preference => {
+
+            const cls =
+                getClassById(
+                    preference.classId
+                );
+
+
+            const teacher =
+                teachers.find(
+                    t =>
+                        t.name ===
+                        preference.teacherName
+                );
+
+
+            if(
+                cls &&
+                teacher
+            ){
+
+                cls.teacherId =
+                    teacher.id;
+
+                cls.teacherSubject =
+                    preference.subject;
+
+            }
+
+        }
+    );
+
+
+    /* =====================================================
+       DEMO SUBJECT CONFIGURATION
+    ===================================================== */
+
+    const mainSubjects = [
+
+        {
+            name:"Tamil",
+            periods:5
+        },
+
+        {
+            name:"English",
+            periods:5
+        },
+
+        {
+            name:"Mathematics",
+            periods:5
+        },
+
+        {
+            name:"Science",
+            periods:5
+        },
+
+        {
+            name:"Islam",
+            periods:5
+        },
+
+        {
+            name:"History",
+            periods:5
+        },
+
+        {
+            name:"Geography",
+            periods:2
+        },
+
+        {
+            name:"Civic Education",
+            periods:2
+        },
+
+        {
+            name:"ICT",
+            periods:2
+        },
+
+        {
+            name:"Health & Physical Education",
+            periods:2
+        },
+
+        {
+            name:"Practical & Technical Skills",
+            periods:2
+        },
+
+        {
+            name:"Aesthetic Education",
+            periods:2
+        }
+
+    ];
+
+
+    classes.forEach(
+        cls => {
+
+            mainSubjects.forEach(
+                item => {
+
+                    const suitable =
+                        findSuitableTeachers(
+                            cls.id,
+                            item.name
+                        );
+
+
+                    if(
+                        suitable.length === 0
+                    ){
+
+                        return;
+
+                    }
+
+
+                    const teacher =
+                        chooseBalancedTeacher(
+                            suitable
+                        );
+
+
+                    if(!teacher){
+
+                        return;
+
+                    }
+
+
+                    subjectConfigs.push({
+
+                        id:id(),
+
+                        classId:
+                            cls.id,
+
+                        subject:
+                            item.name,
+
+                        teacherId:
+                            teacher.id,
+
+                        periods:
+                            item.periods,
+
+                        maxPerDay:1
+
+                    });
+
+                }
+            );
+
+        }
+    );
+
+
+    refresh();
+
+
+    alert(
+        "Editable demo school created successfully."
+    );
+
+}
+
+
+/* =========================================================
+   EVENT LISTENERS
+========================================================= */
+
+document
+    .getElementById(
+        "classGrade"
+    )
+    .addEventListener(
+        "change",
+        renderClassTeacherSelect
+    );
+
+
+document
+    .getElementById(
+        "className"
+    )
+    .addEventListener(
+        "input",
+        renderClassTeacherSelect
+    );
+
+
+/*
+    If class teacher changes, automatically
+    show subjects that this teacher can teach.
+*/
+
+document
+    .getElementById(
+        "classTeacher"
+    )
+    .addEventListener(
+        "change",
+        function(){
+
+            const teacher =
+                getTeacherById(
+                    this.value
+                );
+
+
+            const subjectSelect =
+                document.getElementById(
+                    "classTeacherSubject"
+                );
+
+
+            subjectSelect.innerHTML = `
+
+                <option value="">
+                    Select Subject
+                </option>
+
+            `;
+
+
+            if(!teacher){
+
+                return;
+
+            }
+
+
+            teacher.subjects.forEach(
+                subject => {
+
+                    const option =
+                        document.createElement(
+                            "option"
+                        );
+
+
+                    option.value =
+                        subject;
+
+
+                    option.textContent =
+                        subject;
+
+
+                    subjectSelect.appendChild(
+                        option
+                    );
+
+                }
+            );
+
+        }
+    );
+
+
+/* =========================================================
+   START
+========================================================= */
+
+refresh();
+
+</script>
+
+</body>
+</html>
